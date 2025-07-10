@@ -1,7 +1,8 @@
 {
-  "dependencies": ["./my_agent"],
   "graphs": {
-    "agent": "./my_agent/agent.py:graph"
+    "agent": "./accontrol_agent/graph.py:create_agent_graph"
   },
-  "env": ".env"
+  "env": ".env",
+  "dependencies": ["./my_agent"]
 }
+
