@@ -11,15 +11,15 @@ load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-AWS_REGION = "ap-northeast-1"
-KNOWLEDGE_BASE_ID = "JOSLJLSFLZ"
+AWS_REGION = "us-east-1"
+KNOWLEDGE_BASE_ID = "IZXJ8417SA"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 bedrock_client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 kb_client = boto3.client("bedrock-agent-runtime", region_name=AWS_REGION)
 
 llm = ChatBedrockConverse(
-    model="anthropic.claude-3-5-sonnet-20240620-v1:0",
+    model="us.anthropic.claude-sonnet-4-20250514-v1:0",
     temperature=0,
     client=bedrock_client,
 )
@@ -49,6 +49,18 @@ def get_room_data(room: str):
     except Exception as e:
         return {"error": str(e)}
 
+@tool
+def get_device_data(device_id: str):
+    """Get sensor data for a specific device by ID."""
+    try:
+        parsed = json.loads(device_id)
+        device_id_name = parsed["device_id"]
+        data = supabase.rpc('get_device_anomaly', {'device_input': device_id_name}).execute()
+        print(f"Retrieved data for room {device_id_name}: {data.data}")
+        return data.data if data.data else {"error": f"No data found for device: {device_id}"}
+    except Exception as e:
+        return {"error": str(e)}
+    
 @tool
 def get_device_data(device_id: str):
     """Get sensor data for a specific device by ID."""
