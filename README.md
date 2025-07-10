@@ -2,7 +2,7 @@
 
 ![](static/agent_ui.png)
 
-This is an example agent to deploy with LangGraph Cloud.
+This is AC Control agent Demo.
 
 > [!TIP]
 > If you would rather use `pyproject.toml` for managing dependencies in your LangGraph Cloud project, please check out [this repository](https://github.com/langchain-ai/langgraph-example-pyproject).
