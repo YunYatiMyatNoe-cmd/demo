@@ -5,7 +5,7 @@ from langgraph.graph import StateGraph, END
 from accontrol_agent.utils.state import AgentState
 from accontrol_agent.utils.nodes import (
     interface_agent, orchestrator_agent, validation_agent,
-    should_retry, route_after_interface, route_after_orchestrator
+    should_retry
 )
 
 def create_agent_graph():
@@ -16,24 +16,23 @@ def create_agent_graph():
     graph.add_node("validation_agent", validation_agent)
 
     graph.set_entry_point("interface_agent")
-
-    
     graph.add_conditional_edges(
         "interface_agent",
-        route_after_interface,
-        {"orchestrator_agent": "orchestrator_agent"}
+        lambda state: "orchestrator_agent" if state.get("next_action") != "end" else "end",
+        {
+            "orchestrator_agent": "orchestrator_agent",
+            "end": END
+        }
     )
-    graph.add_conditional_edges(
-        "orchestrator_agent",
-        route_after_orchestrator,
-        {"validation_agent": "validation_agent"}
-    )
+
+    graph.add_edge("orchestrator_agent", "validation_agent")
+    
     graph.add_conditional_edges(
         "validation_agent",
         should_retry,
         {
             "retry_orchestrator": "orchestrator_agent",
-            "end": END
+            "format_output": "interface_agent",    
         }
     )
 
